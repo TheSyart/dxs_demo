@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频转GIF工具</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <h1>视频转GIF工具</h1>
+        
+        <div class="file-input">
+            <label for="videoFile">选择视频文件</label>
+            <input type="file" id="videoFile" accept="video/*">
+        </div>
+        
+        <div class="settings">
+            <div class="setting-group">
+                <label for="fps">帧率 (FPS)</label>
+                <input type="number" id="fps" min="1" max="30" value="10">
+            </div>
+            
+            <div class="setting-group">
+                <label for="quality">画质 (1-10)</label>
+                <input type="number" id="quality" min="1" max="10" value="7">
+            </div>
+            
+            <div class="setting-group">
+                <label for="width">宽度 (像素)</label>
+                <input type="number" id="width" min="10" max="1920" value="480">
+            </div>
+            
+            <div class="setting-group">
+                <label for="duration">截取时长 (秒)</label>
+                <input type="number" id="duration" min="1" max="60" value="5">
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="generateBtn" disabled>生成GIF</button>
+            <button id="downloadBtn" disabled>下载GIF</button>
+        </div>
+        
+        <div class="error" id="errorMsg"></div>
+        
+        <div class="loading" id="loading">
+            <p>正在处理，请稍候...</p>
+        </div>
+        
+        <div class="preview" id="preview">
+            <h3>预览</h3>
+            <div id="previewContainer">
+                <img id="previewImage" src="" alt="GIF预览">
+            </div>
+        </div>
+    </div>
+    
+    <script src="lib/gif.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
