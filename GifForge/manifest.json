@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "视频转GIF工具",
+  "name": "GifForge",
   "version": "1.0",
   "description": "从本地上传视频文件，按要求提取帧，生成GIF并保存到本地",
   "action": {
