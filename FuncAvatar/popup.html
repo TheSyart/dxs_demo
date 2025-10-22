@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuncAvatar</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>FuncAvatar</h1>
+
+        <!-- 图片上传区域 -->
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <div class="upload-icon">📷</div>
+                    <p>点击选择图片</p>
+                    <p class="upload-hint">支持 JPG、PNG、GIF</p>
+                </div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <canvas id="previewCanvas" style="display: none;"></canvas>
+            </div>
+        </div>
+
+        <!-- 预览区域 -->
+        <div class="preview-section" id="previewSection" style="display: none;">
+            <h3>预览效果</h3>
+            <div class="preview-container">
+
+                <canvas id="resultCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- 风格选择 -->
+        <div class="styles-section" id="stylesSection" style="display: none;">
+            <h3>选择风格类型</h3>
+
+            <!-- Tab切换 -->
+            <div class="style-tabs">
+                <button class="tab-btn active" data-tab="overlay">🎨 覆盖风</button>
+                <button class="tab-btn" data-tab="pixel">🎮 像素风</button>
+                <button class="tab-btn" data-tab="flag">🏳️ 国旗风</button>
+            </div>
+
+            <!-- 覆盖风内容 -->
+            <div class="tab-content active" id="overlayTab">
+                <div class="styles-container">
+                    <div class="styles-grid">
+                        <div class="style-item" data-theme="chunjie">
+                            <div class="style-preview">
+                                <img src="images/chunjie1.png" alt="春节主题" onerror="this.style.display='none'">
+                            </div>
+                            <span class="style-name">🧧 春节</span>
+                        </div>
+                        <div class="style-item" data-theme="zhongqiu">
+                            <div class="style-preview">
+                                <img src="images/zhongqiu1.png" alt="中秋主题" onerror="this.style.display='none'">
+                            </div>
+                            <span class="style-name">🌕 中秋</span>
+                        </div>
+                        <div class="style-item" data-theme="shengri">
+                            <div class="style-preview">
+                                <img src="images/shengri1.png" alt="生日主题" onerror="this.style.display='none'">
+                            </div>
+                            <span class="style-name">🎂 生日</span>
+                        </div>
+                        <div class="style-item" data-theme="guoqing">
+                            <div class="style-preview">
+                                <img src="images/guoqing1.png" alt="国庆主题" onerror="this.style.display='none'">
+                            </div>
+                            <span class="style-name">🎊 国庆</span>
+                        </div>
+                        <div class="style-item custom-theme-item" id="customThemeItem">
+                            <div class="style-preview custom-preview">
+                                <div class="custom-upload-icon">
+                                    <span>📁</span>
+                                </div>
+                            </div>
+                            <span class="style-name">🎨 自定义</span>
+                            <input type="file" id="customThemeInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 像素风内容 -->
+            <div class="tab-content" id="pixelTab">
+                <div class="pixel-controls">
+
+                    <!-- 像素风模式选择 -->
+                    <div class="control-group">
+                        <label for="pixelMode">像素模式：</label>
+                        <select id="pixelMode">
+                            <option value="block">马赛克</option>
+                            <option value="dot">点阵像素</option>
+                        </select>
+                        <small class="param-hint">选择不同的像素化风格</small>
+                    </div>
+
+                    <!-- 方块像素控制 -->
+                    <div id="blockControls">
+                        <div class="control-group">
+                            <label for="blockSize">像素大小：</label>
+                            <input type="range" id="blockSize" min="2" max="24" value="8" step="1">
+                            <span id="blockSizeValue">8</span>px
+                            <small class="param-hint">值越大效果越粗糙</small>
+                        </div>
+                    </div>
+
+                    <!-- 点阵像素控制 -->
+                    <div id="dotControls" style="display: none;">
+                        <div class="control-group">
+                            <label for="dotSpacing">点间距：</label>
+                            <input type="range" id="dotSpacing" min="3" max="16" value="6" step="1">
+                            <span id="dotSpacingValue">6</span>px
+                            <small class="param-hint">控制点的密度</small>
+                        </div>
+                        <div class="control-group">
+                            <label for="dotRadius">圆点半径：</label>
+                            <input type="range" id="dotRadius" min="1" max="8" value="3" step="0.5">
+                            <span id="dotRadiusValue">3</span>px
+                            <small class="param-hint">控制点的大小</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 国旗风内容 -->
+        <div class="tab-content" id="flagTab">
+            <div class="flag-controls">
+                <!-- 国旗选择 -->
+                <div class="flag-selection">
+                    <h4>选择国旗</h4>
+                    <div class="flag-grid" id="flagGrid">
+                        <!-- 动态生成国旗选项 -->
+                    </div>
+                </div>
+
+                <!-- 国旗样式选择 -->
+                <div class="flag-style-selection" id="flagStyleSelection" style="display: none;">
+                    <h4>选择样式</h4>
+                    <div class="flag-style-grid">
+
+                        <div class="flag-style-item active" data-flag-style="original">
+                            <div class="flag-style-preview">
+                                <div class="original-preview"></div>
+                            </div>
+                            <span class="flag-style-name">原样</span>
+                        </div>
+                        <div class="flag-style-item" data-flag-style="flying">
+                            <div class="flag-style-preview">
+                                <div class="flying-preview"></div>
+                            </div>
+                            <span class="flag-style-name">飘动</span>
+                        </div>
+                        <div class="flag-style-item" data-flag-style="circle">
+                            <div class="flag-style-preview">
+                                <div class="circle-preview"></div>
+                            </div>
+                            <span class="flag-style-name">嵌入</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 国旗位置选择 -->
+                <div class="flag-position-selection" id="flagPositionSelection" style="display: none;">
+                    <h4>选择位置</h4>
+                    <div class="flag-position-grid">
+                        <div class="flag-position-item active" data-flag-position="top-left">
+                            <div class="flag-position-preview">
+                                <div class="position-indicator top-left"></div>
+                            </div>
+                            <span class="flag-position-name">左上角</span>
+                        </div>
+                        <div class="flag-position-item" data-flag-position="top-right">
+                            <div class="flag-position-preview">
+                                <div class="position-indicator top-right"></div>
+                            </div>
+                            <span class="flag-position-name">右上角</span>
+                        </div>
+                        <div class="flag-position-item" data-flag-position="bottom-left">
+                            <div class="flag-position-preview">
+                                <div class="position-indicator bottom-left"></div>
+                            </div>
+                            <span class="flag-position-name">左下角</span>
+                        </div>
+                        <div class="flag-position-item" data-flag-position="bottom-right">
+                            <div class="flag-position-preview">
+                                <div class="position-indicator bottom-right"></div>
+                            </div>
+                            <span class="flag-position-name">右下角</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 子样式选择 -->
+        <div class="sub-styles" id="subStyles" style="display: none;">
+            <h4>选择具体样式</h4>
+            <div class="sub-styles-grid" id="subStylesGrid">
+                <!-- 动态生成子样式 -->
+            </div>
+        </div>
+
+        <!-- 透明度控制 -->
+        <div class="opacity-control" id="opacityControl" style="display: none;">
+            <h4>调整透明度</h4>
+            <div class="opacity-slider-container">
+                <label for="opacitySlider">透明度: <span id="opacityValue">50%</span></label>
+                <input type="range" id="opacitySlider" min="0" max="100" value="50">
+            </div>
+
+            <!-- 渐变方向选择 -->
+            <div class="gradient-direction-container">
+                <label for="gradientDirection">渐变方向:</label>
+                <select id="gradientDirection">
+                    <option value="left-to-right">从左向右</option>
+                    <option value="right-to-left">从右向左</option>
+                    <option value="top-to-bottom">从上向下</option>
+                    <option value="bottom-to-top">从下向上</option>
+                    <option value="center-to-edge">从中心向四周</option>
+                    <option value="edge-to-center">从四周向中心</option>
+                </select>
+            </div>
+        </div>
+
+
+        <!-- 下载区域 -->
+        <div class="download-section" id="downloadSection" style="display: none;">
+            <button class="download-btn" id="downloadBtn">
+                <span class="download-icon">⬇️</span>
+                下载头像
+            </button>
+        </div>
+    </div>
+    </div>
+
+
+
+    <!-- 图片裁剪弹窗 -->
+    <div id="cropModal" class="crop-modal">
+        <div class="crop-overlay"></div>
+        <div class="crop-container">
+            <div class="crop-header">
+                <h3>选择裁剪区域</h3>
+                <button id="closeCropModal" class="close-btn">×</button>
+            </div>
+            <div class="crop-content">
+                <div class="crop-image-container">
+                    <img id="cropImage" class="crop-image" alt="待裁剪图片">
+                    <div id="cropBox" class="crop-box">
+                        <div class="crop-handle crop-handle-nw" data-handle="nw"></div>
+                        <div class="crop-handle crop-handle-ne" data-handle="ne"></div>
+                        <div class="crop-handle crop-handle-sw" data-handle="sw"></div>
+                        <div class="crop-handle crop-handle-se" data-handle="se"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="crop-footer">
+                <button id="cancelCrop" class="crop-btn crop-btn-cancel">取消</button>
+                <button id="confirmCrop" class="crop-btn crop-btn-confirm">确认裁剪</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入模块化JS文件 -->
+    <!-- 核心模块 -->
+    <script src="js/core/AvatarMaker.js"></script>
+
+    <!-- 处理器模块 -->
+    <script src="js/handlers/ImageHandler.js"></script>
+    <script src="js/handlers/CropHandler.js"></script>
+    <script src="js/handlers/ThemeHandler.js"></script>
+    <script src="js/handlers/PixelHandler.js"></script>
+    <script src="js/handlers/FlagHandler.js"></script>
+
+    <!-- UI控制器 -->
+    <script src="js/ui/UIController.js"></script>
+
+    <!-- 初始化脚本 -->
+    <script src="js/init.js"></script>
+</body>
+
+</html>
